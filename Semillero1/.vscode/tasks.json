@@ -1,0 +1,37 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Compile MPI (MSYS2)",
+            "type": "shell",
+            "command": "powershell",
+            "args": [
+                "-ExecutionPolicy",
+                "Bypass",
+                "-File",
+                "${workspaceFolder}\\.vscode\\build-mpi.ps1",
+                "-Source",
+                "${file}",
+                "-Output",
+                "${fileDirname}\\${fileBasenameNoExtension}.exe"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "problemMatcher": ["$gcc"]
+        },
+        {
+            "label": "Run MPI (4 processes)",
+            "type": "shell",
+            "command": "C:\\Program Files\\Microsoft MPI\\Bin\\mpiexec.exe",
+            "args": [
+                "-n",
+                "4",
+                "${fileDirname}\\${fileBasenameNoExtension}.exe"
+            ],
+            "group": "test",
+            "dependsOn": "Compile MPI (MSYS2)"
+        }
+    ]
+}

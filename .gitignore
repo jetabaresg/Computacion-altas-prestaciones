@@ -1,0 +1,53 @@
+# PDFs excluidos: material con copyright de la UPV (repo público)
+*.pdf
+
+# Guía local con credenciales/identificador UPV (NUNCA versionar)
+GUIA_OPENMP_CLUSTER.md
+
+# Ejecutables y artefactos de compilación
+*.exe
+*.out
+*.o
+*.obj
+*.a
+*.so
+*.dll
+*.pdb
+*.ilk
+*.dSYM/
+build/
+bin/
+out/
+
+# Resultados y archivos temporales
+*.log
+*.tmp
+*.swp
+*.swo
+*.bak
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Configuración local y secretos (NUNCA versionar)
+.env
+.env.local
+.env.*
+!.env.example
+*.pem
+*.key
+*.pfx
+*.p12
+*.cer
+*.crt
+
+# Configuración local de VS Code (se versionan tasks, launch y scripts de build)
+**/.vscode/*
+!**/.vscode/tasks.json
+!**/.vscode/launch.json
+!**/.vscode/build-mpi.ps1
+
+# Cachés de herramientas
+.cache/
+.ccls-cache/
+.clangd/
