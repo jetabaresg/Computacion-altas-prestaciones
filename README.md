@@ -6,7 +6,6 @@ Prácticas, semilleros y apuntes de la asignatura de **Computación de Altas Pre
 
 | Carpeta | Contenido |
 |---|---|
-| `Curso_2026_2027/` | Apuntes y teoría de la asignatura |
 | `Practicas/` | Prácticas de la asignatura |
 | `Semillero1/` | Introducción a MPI: ejemplos en C/C++ y guía de compilación |
 | `Semillero2/` | OpenMP y clúster Kahan: ejercicios knapsack, matrix product y scripts Slurm |
