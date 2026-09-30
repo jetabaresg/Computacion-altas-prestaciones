@@ -48,7 +48,7 @@ int main(int argc,char *argv[]) {
   unsigned long int aciertos_parcial = 0;
   unsigned long int ac_totales = 0;
   
-  #pragma omp parallel reduction(+:aciertos_parcial)
+  #pragma omp parallel reduction(+:aciertos_parcial) //Usa hilos
   {
     double x, y, z;
     unsigned int seed = (rank + 1)*1000 + omp_get_thread_num();
@@ -61,6 +61,7 @@ int main(int argc,char *argv[]) {
       }
     }
   }
+  //MPI_Redyce  trabjar la suma aciertos_parciales en un arbol de manera paralela
   MPI_Reduce(&aciertos_parcial, &ac_totales, 1, MPI_UNSIGNED_LONG, MPI_SUM, 0, MPI_COMM_WORLD);
   if (rank == 0) {
     unsigned long int max_total = puntos_por_proceso * size;
