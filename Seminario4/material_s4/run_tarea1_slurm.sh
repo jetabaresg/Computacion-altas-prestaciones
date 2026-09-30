@@ -16,10 +16,6 @@ mkdir -p ~/ejer_s4
 cd ~/ejer_s4
 gcc -Wall -fopenmp -o cholesky ~/W/cna/Seminario4/cholesky.c ~/W/cna/Seminario4/ctimer.c -llapack -lblas -lm
 
-echo "========================================================="
-echo "   TAREA 1: BÚSQUEDA DEL TAMAÑO DE BLOQUE ÓPTIMO (b)"
-echo "========================================================="
-
 for n in 1024 2048 4096; do
     echo "---------------------------------------------------------"
     echo " Pruebas con N = $n"
