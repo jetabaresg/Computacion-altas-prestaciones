@@ -10,6 +10,7 @@ Prácticas, semilleros y apuntes de la asignatura de **Computación de Altas Pre
 | `Semillero1/` | Introducción a MPI: ejemplos en C/C++ y guía de compilación |
 | `Semillero2/` | OpenMP y clúster Kahan: ejercicios knapsack, matrix product y scripts Slurm |
 | `Semillero3/` | Ejercicios del seminario 3 |
+....
 
 ## Requisitos generales
 
@@ -19,9 +20,7 @@ Prácticas, semilleros y apuntes de la asignatura de **Computación de Altas Pre
 - Compilador con soporte OpenMP (GCC / MSVC)
 - Acceso al clúster Kahan para los trabajos Slurm (red UPV o Polilabs)
 
-## Uso rápido
-
-Cada semillero tiene su propio `README.md` con instrucciones detalladas. Ejemplo con MPI desde la raíz:
+## Uso
 
 ```powershell
 .\Semillero1\.vscode\build-mpi.ps1 -Source .\Semillero1\material_s1\esfera.c -Output .\Semillero1\material_s1\esfera.exe
