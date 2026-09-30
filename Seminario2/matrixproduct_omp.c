@@ -29,7 +29,7 @@ void ijk_omp(double *A, double *B, double *C, int n) {
 }
 
 void ikj_omp(double *A, double *B, double *C, int n) {
-    #pragma omp parallel for collapse(2)
+    #pragma omp parallel for
     for (int i = 0; i < n; i++)
         for (int k = 0; k < n; k++) {
             double aik = A[i*n+k];
@@ -50,7 +50,7 @@ void jik_omp(double *A, double *B, double *C, int n) {
 }
 
 void jki_omp(double *A, double *B, double *C, int n) {
-    #pragma omp parallel for collapse(2)
+    #pragma omp parallel for
     for (int j = 0; j < n; j++)
         for (int k = 0; k < n; k++) {
             double bkj = B[k*n+j];

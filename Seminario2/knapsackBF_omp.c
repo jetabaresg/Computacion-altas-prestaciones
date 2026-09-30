@@ -18,21 +18,24 @@ int main(int argc, char *argv[]) {
     }
 
     long long total = 1LL << n;
-    int best_val = 0, best_wt = 0;
+    long long best_key = 0;  // (val << 32) | wt
 
     double t = omp_get_wtime();
 
-    #pragma omp parallel for schedule(dynamic) reduction(max:best_val)
+    #pragma omp parallel for schedule(static) reduction(max:best_key)
     for (long long m = 0; m < total; m++) {
         int cw = 0, cv = 0;
         for (int i = 0; i < n; i++)
             if (m & (1LL << i)) { cw += w[i]; cv += v[i]; }
 
-        #pragma omp critical
-        if (cw <= cap && cv > best_val) {
-            best_val = cv; best_wt = cw;
+        if (cw <= cap) {
+            long long key = ((long long)cv << 32) | (unsigned int)cw;
+            if (key > best_key) best_key = key;
         }
     }
+
+    int best_val = (int)(best_key >> 32);
+    int best_wt = (int)(best_key & 0xFFFFFFFF);
 
     printf("omp: %.6f val=%d wt=%d\n", omp_get_wtime() - t, best_val, best_wt);
 

@@ -1,9 +1,9 @@
-#include <stdio.h> 
-#include <stdlib.h> 
-#include <math.h> 
+#include <stdio.h>
+#include <stdlib.h>
+#include <math.h>
 #include <limits.h>
 #include <time.h>
-#include <mpi.h> 
+#include <mpi.h>
 #include <errno.h>
 
 #define MAX_NUMEROS 10000
@@ -13,25 +13,16 @@
 #define MPI_ESCLAVO_PREPARADO 2
 #define MPI_FIN 3
 
-#define ETIQUETA(tag) ((tag) == 0 ? "SOLUCION_ENCONTRADA" : (tag) == 1 ? "BUSCAR_PRIMO" : (tag) == 2 ? "ESCLAVO_PREPARADO" : "FIN")
-
 typedef unsigned long long Entero_grande;
 #define ENTERO_MAS_GRANDE  ULLONG_MAX
 
 int es_primo( Entero_grande n ) {
-  int p;
-  Entero_grande i, s;
-
-  p = (n % 2 != 0 || n == 2);
-
-  if (p) {
-    s = sqrt(n);
-
-    for (i = 3; p && i <= s; i += 2)
-      if (n % i == 0) p = 0;
-  }
-
-  return p;
+  if (n < 2) return 0;
+  if (n % 2 == 0) return n == 2;
+  Entero_grande s = (Entero_grande)sqrt((double)n);
+  for (Entero_grande i = 3; i <= s; i += 2)
+    if (n % i == 0) return 0;
+  return 1;
 }
 
 Entero_grande generar_numero( ) {
@@ -45,16 +36,16 @@ int main(int argc,char *argv[]) {
   int rank, size, primos_solicitados;
   MPI_Status status;
 
-  MPI_Init(&argc,&argv); 
-  MPI_Comm_size(MPI_COMM_WORLD,&size); 
+  MPI_Init(&argc,&argv);
+  MPI_Comm_size(MPI_COMM_WORLD,&size);
   MPI_Comm_rank(MPI_COMM_WORLD,&rank);
 
   if (size<2) {
     printf("El número minimo de procesos es de 2\n");
-    MPI_Finalize(); 
+    MPI_Finalize();
     return 0;
   }
-  
+
   if (argc >= 2) {
     char *fin;
     long solicitados;
@@ -80,7 +71,6 @@ int main(int argc,char *argv[]) {
       int esclavos = size - 1;    /* esclavos aún activos */
       Entero_grande numero;
       int tag, fuente;
-      int iteracion = 0;
 
       while( esclavos > 0 ) {
         MPI_Recv(&numero, 1, MPI_UNSIGNED_LONG_LONG, MPI_ANY_SOURCE, MPI_ANY_TAG, MPI_COMM_WORLD, &status);
@@ -103,7 +93,7 @@ int main(int argc,char *argv[]) {
 
       t2 = MPI_Wtime();
       printf("Tiempo = %f s.\n",t2-t1);
-  } else { 
+  } else {
       /* ------- Código del esclavo ------- */
       int continuar = 1;
       Entero_grande n;
@@ -121,7 +111,7 @@ int main(int argc,char *argv[]) {
         }
       }
   }
-  
-  MPI_Finalize(); 
+
+  MPI_Finalize();
   return 0;
 }

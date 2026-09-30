@@ -1,7 +1,7 @@
-#include <stdio.h> 
+#include <stdio.h>
 #include <stdlib.h>
-#include <math.h> 
-#include <mpi.h> 
+#include <math.h>
+#include <mpi.h>
 #include <errno.h>
 
 int main(int argc,char *argv[]) {
@@ -50,7 +50,7 @@ int main(int argc,char *argv[]) {
     double x = (((double) rand() ) / RAND_MAX ) * radio;
     double y = (((double) rand() ) / RAND_MAX ) * radio;
     double z = (((double) rand() ) / RAND_MAX ) * radio;
-    if( ( x*x + y*y + z*z ) <= (radio*radio) ) aciertos_parcial+=1.0;
+    if( ( x*x + y*y + z*z ) <= (radio*radio) ) aciertos_parcial += 1;
   }
 
   unsigned long int ac_totales = 0;
