@@ -1,11 +1,7 @@
-#!/bin/bash
-# Script para realizar los experimentos del Seminario 4 (Tareas 2, 3, 4)
-# Requiere: gcc, LAPACK/BLAS, OpenMP
-
 export OMP_PROC_BIND=close
 export OMP_PLACES=cores
 
-echo "=== Tarea 2: Estudio tamaño de problema con hilos máximos ==="
+echo "2: Estudio tamaño de problema con hilos máximos"
 echo "n b threads time error"
 for n in 500 1000 2000 4000; do
     for b in 16 32 64 128 256; do
@@ -15,14 +11,14 @@ for n in 500 1000 2000 4000; do
 done
 
 echo ""
-echo "=== Tarea 3: Estudio variando número de hilos (n=2000, b=64) ==="
+echo "3: Estudio variando número de hilos (n=2000, b=64)"
 echo "n b threads time error"
 for t in 1 2 4 8 16 32; do
     ./cholesky_par 2000 64 $t 2>&1 | tail -1
 done
 
 echo ""
-echo "=== Tarea 4: Estudio políticas de planificación (n=2000, b=64, 8 hilos) ==="
+echo "4: Estudio políticas de planificación (n=2000, b=64, 8 hilos)"
 echo "schedule time error"
 for sched in static dynamic guided; do
     for chunk in 1 4 16; do
