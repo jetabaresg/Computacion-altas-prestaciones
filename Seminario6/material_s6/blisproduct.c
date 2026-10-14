@@ -28,11 +28,11 @@ void pack_B(int kc, int nc, double *B, int ldb, double *Bc) {
   } 
 }
 // Empaqueta el bloque A(ic:ic+mc, pc:pc+kc) en memoria contigua
-//Ac 
+// Ac: mc x kc column-major
 void pack_A(int mc, int kc, double *A, int lda, double *Ac) {
   for (int p = 0; p < kc; p++) {
-    for (int i = 0; i < kc; i++) {
-      Ac[i + p * kc] = A[i + p * lda]; 
+    for (int i = 0; i < mc; i++) {
+      Ac[i + p * mc] = A[i + p * lda]; 
     } 
   } 
 }
@@ -40,15 +40,9 @@ void pack_A(int mc, int kc, double *A, int lda, double *Ac) {
 int main(int argc, char *argv[]){
 
   if( argc<2 ) {
-    printf("Usage: <m> <n> <p> seq?\n");
+    printf("Usage: <m> <n> <p> seq? <mc> <nc> <kc>\n");
     return 1;
   }
-  //para leer en la terminal 
-  int mc = 256, nc = 256, kc = 256;
-  if (argc > 5) sscanf(argv[9], "%d", &mc);
-  if (argc > 6) sscanf(argv[10], "%d", &nc); 
-  if (argc > 7) sscanf(argv[11], "%d", &kc);
-
   int m, n, k;
   sscanf(argv[1],"%d",&m);
   if( argc>2 ) {
@@ -61,6 +55,11 @@ int main(int argc, char *argv[]){
   if( argc>4 ) {
     sscanf(argv[4],"%d",&seq);
   } 
+  // para leer en la terminal 
+  int mc = 256, nc = 256, kc = 256;
+  if (argc > 5) sscanf(argv[5], "%d", &mc);
+  if (argc > 6) sscanf(argv[6], "%d", &nc); 
+  if (argc > 7) sscanf(argv[7], "%d", &kc);
 
   double *A = (double *) malloc (m*k*sizeof(double));
   double *B = (double *) malloc (k*n*sizeof(double));
@@ -84,11 +83,11 @@ int main(int argc, char *argv[]){
     double elapsed, ucpu, scpu;
     ctimer( &elapsed, &ucpu, &scpu );
     for( int j = 0; j < n; j++ ) {
-       for( int p = 0; p < k; p++ ) {
+      for( int p = 0; p < k; p++ ) {
           for( int i = 0; i < m; i++ ) {
              Cseq(i,j) = Cseq(i,j) + A(i,p) * B(p,j); 
           }
-       }
+      }
     }
     ctimer( &elapsed, &ucpu, &scpu );
     // print( "Cseq", m, n, Cseq );
@@ -110,10 +109,13 @@ int main(int argc, char *argv[]){
       for( int ic = 0; ic < m; ic += mc ) { // Bucle L3 (pasos de mc) 
         pack_A(mc, kc, &A[ic + pc * m], m, Ac);
         // multiplicacion usando buffers  
-        for( int j = jc; j < jc + nc; j++ ) { 
-          for( int p = pc; p < pc + kc; p++ ) { 
-            for( int i = ic; i < ic + mc; i++ ) { 
-              C[(ic + i) + (jc + j) * m] += Ac[i + p * mc] * Bc[p + j * kc];
+        for( int p = pc; p < pc + kc; p++ ) { 
+          int pl = p - pc;
+          for( int i = ic; i < ic + mc; i++ ) { 
+            int il = i - ic;
+            for( int j = jc; j < jc + nc; j++ ) { 
+              int jl = j - jc;
+              C[(i) + (j) * m] += Ac[il + pl * mc] * Bc[pl + jl * kc];
             } 
           } 
         } 
@@ -139,7 +141,7 @@ int main(int argc, char *argv[]){
     }
     printf("Error = %.2e\n",error);
   }
-   
+  
   free(A);
   free(B);
   free(Cseq);
