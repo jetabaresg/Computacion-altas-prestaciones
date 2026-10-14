@@ -29,7 +29,7 @@ void pack_B(int kc, int nc, double *B, int ldb, double *Bc) {
 }
 // Empaqueta el bloque A(ic:ic+mc, pc:pc+kc) en memoria contigua
 //Ac 
-void pack_B(int mc, int kc, double *A, int lda, double *Ac) {
+void pack_A(int mc, int kc, double *A, int lda, double *Ac) {
   for (int p = 0; p < kc; p++) {
     for (int i = 0; i < kc; i++) {
       Ac[i + p * kc] = A[i + p * lda]; 
@@ -122,7 +122,7 @@ int main(int argc, char *argv[]){
   }
   free(Ac); 
   free(Bc);
-  
+
   ctimer( &elapsed, &ucpu, &scpu );
   // print( "C", m, n, C );
   printf("Tiempo = %.1f segundos de la multiplicación optimizada\n",elapsed);
