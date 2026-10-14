@@ -18,6 +18,24 @@ void print( const char *matriz, const int m, const int n, double *M ) {
   }
   printf("]\n");
 }
+// Empaqueta el bloque B(pc:pc+kc, jc:jc+nc) en memoria contigua 
+//Bc 
+void pack_B(int kc, int nc, double *B, int ldb, double *Bc) {
+  for (int j = 0; j < nc; j++) {
+    for (int p = 0; p < kc; p++) {
+      Bc[p + j * kc] = B[p + j * ldb]; 
+    } 
+  } 
+}
+// Empaqueta el bloque A(ic:ic+mc, pc:pc+kc) en memoria contigua
+//Ac 
+void pack_B(int mc, int kc, double *A, int lda, double *Ac) {
+  for (int p = 0; p < kc; p++) {
+    for (int i = 0; i < kc; i++) {
+      Ac[i + p * kc] = A[i + p * lda]; 
+    } 
+  } 
+}
 
 int main(int argc, char *argv[]){
 
@@ -83,21 +101,28 @@ int main(int argc, char *argv[]){
   double elapsed, ucpu, scpu;
   ctimer( &elapsed, &ucpu, &scpu );
 
-  // 1\. Bucles externos: seleccionan la posición del bloque 
+  double *Ac = (double *) malloc(mc * kc * sizeof(double)); 
+  double *Bc = (double *) malloc(kc * nc * sizeof(double));//empaquetado
+
   for( int jc = 0; jc < n; jc += nc ) { // Bucle L1 (pasos de nc) 
-    for( int pc = 0; pc < k; pc += kc ) { // Bucle L2 (pasos de kc) 
+    for( int pc = 0; pc < k; pc += kc ) { // Bucle L2 (pasos de kc)
+      pack_B(kc, nc, &B[pc + jc * k], k, Bc); 
       for( int ic = 0; ic < m; ic += mc ) { // Bucle L3 (pasos de mc) 
-        // 2\. Bucles internos: multiplican los subbloques seleccionados 
+        pack_A(mc, kc, &A[ic + pc * m], m, Ac);
+        // multiplicacion usando buffers  
         for( int j = jc; j < jc + nc; j++ ) { 
           for( int p = pc; p < pc + kc; p++ ) { 
             for( int i = ic; i < ic + mc; i++ ) { 
-              C(i,j) = C(i,j) + A(i,p) * B(p,j); 
+              C[(ic + i) + (jc + j) * m] += Ac[i + p * mc] * Bc[p + j * kc];
             } 
           } 
         } 
       } 
     } 
   }
+  free(Ac); 
+  free(Bc);
+  
   ctimer( &elapsed, &ucpu, &scpu );
   // print( "C", m, n, C );
   printf("Tiempo = %.1f segundos de la multiplicación optimizada\n",elapsed);
