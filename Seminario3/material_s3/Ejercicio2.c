@@ -9,6 +9,7 @@ static int potencia_p2p( int n, double *A, double *lambda, double *q );
 static int potencia_coll( int n, double *A, double *lambda, double *q );
 
 int main( int argc, char *argv[] ) {
+    double t_start = MPI_Wtime();
     MPI_Init(&argc,&argv);
     int nprocs, rank;
     MPI_Comm_size (MPI_COMM_WORLD, &nprocs);
@@ -44,6 +45,8 @@ int main( int argc, char *argv[] ) {
     if( rank==0 ) {
         printf("Punto a punto: lambda = %f, iter = %d\n", lambda1, k1);
         printf("Colectivas:    lambda = %f, iter = %d\n", lambda2, k2);
+        double t_end = MPI_Wtime();
+        printf("Tiempo total = %.4f s\n", t_end - t_start);
         free(q);
         free(A);
     }

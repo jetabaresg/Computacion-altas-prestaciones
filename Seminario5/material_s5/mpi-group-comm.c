@@ -3,6 +3,7 @@
 #include <mpi.h>
 
 int main(int argc, char *argv[]) {
+    double t_start = MPI_Wtime();
     int p, rank;
     MPI_Group group_world;
     MPI_Group comm1_group, comm2_group;
@@ -71,6 +72,8 @@ int main(int argc, char *argv[]) {
     free(comm1_procs);
     free(comm2_procs);
 
+    double t_end = MPI_Wtime();
+    if (rank == 0) printf("Tiempo total = %.4f s\n", t_end - t_start);
     MPI_Finalize();
     return 0;
 }

@@ -2,6 +2,7 @@
 #include <mpi.h>
 
 int main(int argc, char *argv[]) {
+    double t_start = MPI_Wtime();
     const int ndims = 2;
     int p, rank, cart_rank;
     MPI_Comm comm2D;
@@ -69,6 +70,9 @@ int main(int argc, char *argv[]) {
     }
 
     MPI_Comm_free(&comm2D);
+
+    double t_end = MPI_Wtime();
+    if (rank == 0) printf("Tiempo total = %.4f s\n", t_end - t_start);
     MPI_Finalize();
     return 0;
 }
