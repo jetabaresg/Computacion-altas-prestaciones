@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <math.h>
 #include "ctimer.h"
+#include <omp.h>
 
 #define Cseq(i,j) Cseq[(i)+m*(j)]
 #define C(i,j) C[(i)+m*(j)]
@@ -108,6 +109,7 @@ int main(int argc, char *argv[]){
     for( int pc = 0; pc < k; pc += kc ) {
       int kb = (k - pc < kc) ? k - pc : kc;
       pack_B(kb, nb, &B[pc + jc * k], k, Bc);
+      #pragma omp parallel for default(shared)
       for( int ic = 0; ic < m; ic += mc ) {
         int mb = (m - ic < mc) ? m - ic : mc;
         pack_A(mb, kb, &A[ic + pc * m], m, Ac);
@@ -123,7 +125,7 @@ int main(int argc, char *argv[]){
       }
     }
   }
-  
+
   free(Ac); 
   free(Bc);
 
