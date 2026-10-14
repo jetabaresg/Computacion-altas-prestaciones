@@ -103,25 +103,27 @@ int main(int argc, char *argv[]){
   double *Ac = (double *) malloc(mc * kc * sizeof(double)); 
   double *Bc = (double *) malloc(kc * nc * sizeof(double));//empaquetado
 
-  for( int jc = 0; jc < n; jc += nc ) { // Bucle L1 (pasos de nc) 
-    for( int pc = 0; pc < k; pc += kc ) { // Bucle L2 (pasos de kc)
-      pack_B(kc, nc, &B[pc + jc * k], k, Bc); 
-      for( int ic = 0; ic < m; ic += mc ) { // Bucle L3 (pasos de mc) 
-        pack_A(mc, kc, &A[ic + pc * m], m, Ac);
-        // multiplicacion usando buffers  
-        for( int p = pc; p < pc + kc; p++ ) { 
-          int pl = p - pc;
-          for( int i = ic; i < ic + mc; i++ ) { 
-            int il = i - ic;
-            for( int j = jc; j < jc + nc; j++ ) { 
-              int jl = j - jc;
-              C[(i) + (j) * m] += Ac[il + pl * mc] * Bc[pl + jl * kc];
-            } 
-          } 
-        } 
-      } 
-    } 
+  for( int jc = 0; jc < n; jc += nc ) {
+    int nb = (n - jc < nc) ? n - jc : nc;
+    for( int pc = 0; pc < k; pc += kc ) {
+      int kb = (k - pc < kc) ? k - pc : kc;
+      pack_B(kb, nb, &B[pc + jc * k], k, Bc);
+      for( int ic = 0; ic < m; ic += mc ) {
+        int mb = (m - ic < mc) ? m - ic : mc;
+        pack_A(mb, kb, &A[ic + pc * m], m, Ac);
+
+        for( int jl = 0; jl < nb; jl++ ) {
+          for( int pl = 0; pl < kb; pl++ ) {
+            double b = Bc[pl + jl * kb];
+            for( int il = 0; il < mb; il++ ) {
+              C[(ic + il) + (jc + jl) * m] += Ac[il + pl * mb] * b;
+            }
+          }
+        }
+      }
+    }
   }
+  
   free(Ac); 
   free(Bc);
 
