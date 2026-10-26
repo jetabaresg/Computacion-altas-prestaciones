@@ -5,6 +5,7 @@
 #include "ctimer.h"
 
 #define A(i,j) A[(j)*n+(i)]
+#define L(i,j) L[(j)*n+(i)]
 
 int cholesky_bloques_par( int n, int b, double *A, int nthreads );
 

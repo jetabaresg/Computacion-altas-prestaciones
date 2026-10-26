@@ -5,7 +5,7 @@
 #SBATCH --cpus-per-task=4 
 #SBATCH --time=00:10:00 
 #SBATCH --partition=cna 
-#SBATCH --output=/home/alumno/W/cna/Computacion-altas-prestaciones/Proyecto/salida\_p2\_%j.out 
+#SBATCH --output=/home/alumno/W/cna/Computacion-altas-prestaciones/Proyecto/salida_p2\_%j.out 
 # 1\. Crear directorio local 
 mkdir -p \~/ejer\_p2 
 cd \~/ejer\_p2 

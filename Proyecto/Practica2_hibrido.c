@@ -9,7 +9,6 @@ void init_matrix_col_major(double *M, int n, unsigned int seed) {
     srand(seed);
     for (int j = 0; j < n; j++) {
         for (int i = 0; i < n; i++) {
-            /* El elemento M(i,j) esta en el indice i + j * n */
             M[i + j * n] = (double)(rand() % 10);
         }
     }
@@ -56,7 +55,7 @@ int main(int argc, char *argv[]) {
         return 1;
     }
 
-    int m = n / size; /* columnas de B (y de C) que recibe cada proceso */
+    int m = n / size;
 
     double *A  = (double *)malloc((size_t)n * n * sizeof(double));
     double *Bi = (double *)malloc((size_t)n * m * sizeof(double));
