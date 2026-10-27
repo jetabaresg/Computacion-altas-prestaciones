@@ -63,7 +63,7 @@ int main(int argc, char *argv[]) {
     double t_seq = 0.0;
 
     if (rank == 0) {
-        printf("=== PRACTICA 1 ===\n");
+        printf("Practica 1 \n");
         printf("Proceso P0 ejecutando con N = %d y %d procesos MPI iniciados.\n",n, size);
 
         B = (double *)malloc((size_t)n * n * sizeof(double));
