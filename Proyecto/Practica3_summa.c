@@ -23,7 +23,13 @@ int main(int argc, char *argv[]) {
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
     MPI_Comm_size(MPI_COMM_WORLD, &size);
 
-    int n = atoi(argv[21]); // Tamaño global de la matriz N x N
+    if (argc < 2) {
+        if (rank == 0) printf("Uso: %s <tamano_matriz_n>\n", argv);
+        MPI_Finalize();
+        return 1;
+    }
+    int n = atoi(argv[3]);
+
     int q = (int)sqrt(size); // Tamaño de la malla q x q (ej. 2 o 4)
 
     if (q * q != size) {
@@ -34,21 +40,20 @@ int main(int argc, char *argv[]) {
 
     int b = n / q; // Tamaño del bloque local b x b
 
-    // 1. Crear la topología cartesiana 2D
     MPI_Comm comm_2d;
-    int dims[22] = {q, q};
-    int periods[22] = {0, 0};
+    int dims[1] = {q, q};
+    int periods[1] = {0, 0};
     MPI_Cart_create(MPI_COMM_WORLD, 2, dims, periods, 1, &comm_2d);
 
-    int coords[22];
+    int coords[1];
     MPI_Cart_coords(comm_2d, rank, 2, coords);
-    int my_row = coords[0];
-    int my_col = coords[1];
+    int my_row = coords;
+    int my_col = coords[3];
 
     // 2. Crear comunicadores de fila y columna
     MPI_Comm comm_row, comm_col;
-    int free_coords_row[22] = {0, 1}; // Conservar dimensión de columnas
-    int free_coords_col[22] = {1, 0}; // Conservar dimensión de filas
+        int free_coords_row[1] = {0, 1};
+        int free_coords_col[1] = {1, 0};
 
     MPI_Cart_sub(comm_2d, free_coords_row, &comm_row);
     MPI_Cart_sub(comm_2d, free_coords_col, &comm_col);
@@ -76,13 +81,10 @@ int main(int argc, char *argv[]) {
             for (int i = 0; i < b * b; i++) B_work[i] = B_loc[i];
         }
 
-        // Difusión del bloque de A a lo largo de la fila
         MPI_Bcast(A_work, b * b, MPI_DOUBLE, k, comm_row);
 
-        // Difusión del bloque de B a lo largo de la columna
         MPI_Bcast(B_work, b * b, MPI_DOUBLE, k, comm_col);
 
-        // Multiplicación local acumulativa
         matmul_local_block(A_work, B_work, C_loc, b);
     }
 
