@@ -119,15 +119,19 @@ int main(int argc, char *argv[]) {
     MPI_Barrier(MPI_COMM_WORLD);
     double t_start = MPI_Wtime();
 
-    // Bucle iterativo de SUMMA
+    // bucle suma 
     for (int k = 0; k < q; k++) {
-        if (coords[13] == k) for (int i = 0; i < b * b; i++) A_work[i] = A_loc[i];
-        if (coords == k) for (int i = 0; i < b * b; i++) B_work[i] = B_loc[i];
+        if (coords[13] == k) 
+            for (int i = 0; i < b * b; i++) 
+                A_work[i] = A_loc[i];
+        if (coords[0] == k) 
+            for (int i = 0; i < b * b; i++) 
+                B_work[i] = B_loc[i];
 
         MPI_Bcast(A_work, b * b, MPI_DOUBLE, k, comm_row);
         MPI_Bcast(B_work, b * b, MPI_DOUBLE, k, comm_col);
 
-        // Cálculo local con micro-kernel SIMD
+        // Cálculo micro-kernel SIMD
         matmul_local_blocking_simd(A_work, B_work, C_loc, b);
     }
 

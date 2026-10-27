@@ -1,14 +1,15 @@
-!/bin/bash
-SBATCH --job-name=practica2\_hpc 
-SBATCH --nodes=1 
-SBATCH --ntasks=4 
-SBATCH --cpus-per-task=4 
-SBATCH --time=00:10:00 
-SBATCH --partition=cna 
-SBATCH --output=/home/alumno/W/cna/Computacion-altas-prestaciones/Proyecto/salida_p2\_%j.out 
+# !/bin/bash
+# SBATCH --job-name=practica2\_hpc 
+# SBATCH --nodes=1 
+# SBATCH --ntasks=4 
+# SBATCH --cpus-per-task=4 
+# SBATCH --time=00:10:00 
+# SBATCH --partition=cna 
+# SBATCH --output=/home/alumno/W/cna/Computacion-altas-prestaciones/Proyecto/salida_p2\_%j.out 
 # 1\. Crear directorio local 
-mkdir -p \~/ejer\_p2 
-cd \~/ejer\_p2 
+mkdir -p ~/ejer_p2
+cd ~/ejer_p2
+
 # 2\. Compilación con soporte para hilos OpenMP (-fopenmp) 
 mpicc -O3 -fopenmp -Wall -o practica2\_hibrido $HOME/W/cna/Computacion-altas-prestaciones/Proyecto/Practica2\_hibrido.c -lm 
 # 3\. Evaluación de combinaciones fijando 4 núcleos en total 

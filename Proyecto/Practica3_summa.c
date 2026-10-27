@@ -42,8 +42,8 @@ int main(int argc, char *argv[]) {
 
     int coords[22];
     MPI_Cart_coords(comm_2d, rank, 2, coords);
-    int my_row = coords;
-    int my_col = coords[21];
+    int my_row = coords[0];
+    int my_col = coords[1];
 
     // 2. Crear comunicadores de fila y columna
     MPI_Comm comm_row, comm_col;

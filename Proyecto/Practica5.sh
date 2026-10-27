@@ -14,7 +14,7 @@ cd ~/ejer_p5
 # Compilación con soporte OpenMP, vectorización nativa y FMA
 mpicc -O3 -fopenmp -march=native -mfma -Wall -o practica5_simd $HOME/W/cna/Computacion-altas-prestaciones/Proyecto/Practica5_summa_simd.c -lm
 
-echo "=== PRUEBAS PRÁCTICA 5 (SUMMA + BLOQUEO + SIMD) ==="
+echo "PRUEBAS PRÁCTICA 5 SUMMA + BLOQUEO + SIMD"
 export OMP_NUM_THREADS=8
 
 mpiexec -n 16 ./practica5_simd 1024

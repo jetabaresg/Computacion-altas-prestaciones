@@ -12,7 +12,7 @@ mkdir -p ~/ejer_p4
 cd ~/ejer_p4
 
 # Compilación con soporte OpenMP y optimizaciones del compilador
-mpicc -O3 -fopenmp -Wall -o practica4_blocking $HOME/W/cna/Computacion-altas-prestaciones/Proyecto/Practica4_summa_blocking.c -lm
+mpicc -O3 -fopenmp -Wall -o practica4_blocking $HOME/W/cna/Computacion-altas-prestaciones/Proyecto/Practica4_summa_bloques.c -lm
 
 echo "=== PRUEBAS PRÁCTICA 4 (SUMMA + BLOQUEO) ==="
 export OMP_NUM_THREADS=8
