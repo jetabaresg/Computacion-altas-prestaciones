@@ -56,7 +56,7 @@ void matmul_local_bloques(double *A, double *B, double *C, int b) {
                     }
                 }
 
-                #pragma omp parallel for default(shared)
+                #pragma omp parallel for default(shared) private(k, i)
                 for (int j = 0; j < nc_actual; j++) {
                     for (int k = 0; k < kc_actual; k++) {
                         double valor_b = Bc[k + j * kc_actual];
@@ -80,7 +80,7 @@ int main(int argc, char *argv[]) {
     MPI_Comm_size(MPI_COMM_WORLD, &tamano);
 
     if (argc < 2) {
-        if (rango == 0) printf("Uso: %s <tamano_matriz_N> [check]\n", argv[0]);
+        if (rango == 0) printf("Uso: %s <tamano_matriz_N> [check]\n", argv);
         MPI_Finalize();
         return 1;
     }
@@ -110,7 +110,7 @@ int main(int argc, char *argv[]) {
 
     int coords[2];
     MPI_Cart_coords(comm_2d, rango, 2, coords);
-    int mi_fila = coords[0];
+    int mi_fila = coords;
     int mi_col = coords[1];
 
     MPI_Comm comm_fila, comm_col;
@@ -158,7 +158,7 @@ int main(int argc, char *argv[]) {
         for (int r = 0; r < tamano; r++) {
             int c[2];
             MPI_Cart_coords(comm_2d, r, 2, c);
-            int pos_offset = (c[0] * b) + (c[1] * b) * n;
+            int pos_offset = (c * b) + (c[1] * b) * n;
 
             if (r == 0) {
                 for (int col = 0; col < b; col++) {
@@ -202,7 +202,7 @@ int main(int argc, char *argv[]) {
         for (int r = 0; r < tamano; r++) {
             int c[2];
             MPI_Cart_coords(comm_2d, r, 2, c);
-            int pos_offset = (c[0] * b) + (c[1] * b) * n;
+            int pos_offset = (c * b) + (c[1] * b) * n;
 
             if (r == 0) {
                 for (int col = 0; col < b; col++) {
