@@ -33,6 +33,7 @@ void matmul_secuencial_col(double *A, double *B, double *C, int n) {
 }
 
 void matmul_local_bloques(double *A, double *B, double *C, int b) {
+    int i, k;
     for (int jc = 0; jc < b; jc += NC) {
         int nc_actual = (jc + NC > b) ? (b - jc) : NC;
 
@@ -41,7 +42,7 @@ void matmul_local_bloques(double *A, double *B, double *C, int b) {
 
             double *Bc = (double *)malloc((size_t)kc_actual * nc_actual * sizeof(double));
             for (int j = 0; j < nc_actual; j++) {
-                for (int k = 0; k < kc_actual; k++) {
+                for (k = 0; k < kc_actual; k++) {
                     Bc[k + j * kc_actual] = B[(pc + k) + (jc + j) * b];
                 }
             }
@@ -50,17 +51,17 @@ void matmul_local_bloques(double *A, double *B, double *C, int b) {
                 int mc_actual = (ic + MC > b) ? (b - ic) : MC;
 
                 double *Ac = (double *)malloc((size_t)mc_actual * kc_actual * sizeof(double));
-                for (int k = 0; k < kc_actual; k++) {
-                    for (int i = 0; i < mc_actual; i++) {
+                for (k = 0; k < kc_actual; k++) {
+                    for (i = 0; i < mc_actual; i++) {
                         Ac[i + k * mc_actual] = A[(ic + i) + (pc + k) * b];
                     }
                 }
 
                 #pragma omp parallel for default(shared) private(k, i)
                 for (int j = 0; j < nc_actual; j++) {
-                    for (int k = 0; k < kc_actual; k++) {
+                    for (k = 0; k < kc_actual; k++) {
                         double valor_b = Bc[k + j * kc_actual];
-                        for (int i = 0; i < mc_actual; i++) {
+                        for (i = 0; i < mc_actual; i++) {
                             C[(ic + i) + (jc + j) * b] += Ac[i + k * mc_actual] * valor_b;
                         }
                     }
@@ -80,7 +81,7 @@ int main(int argc, char *argv[]) {
     MPI_Comm_size(MPI_COMM_WORLD, &tamano);
 
     if (argc < 2) {
-        if (rango == 0) printf("Uso: %s <tamano_matriz_N> [check]\n", argv);
+        if (rango == 0) printf("Uso: %s <tamano_matriz_N> [check]\n", argv[0]);
         MPI_Finalize();
         return 1;
     }
@@ -90,13 +91,13 @@ int main(int argc, char *argv[]) {
 
     int q = (int)sqrt(tamano);
     if (q * q != tamano) {
-        if (rango == 0) fprintf(stderr, "Error: El número de procesos (%d) debe ser un cuadrado perfecto.\n", tamano);
+        if (rango == 0) fprintf(stderr, "Error: El numero de procesos (%d) debe ser un cuadrado perfecto.\n", tamano);
         MPI_Finalize();
         return 1;
     }
 
     if (n % q != 0) {
-        if (rango == 0) fprintf(stderr, "Error: N (%d) debe ser múltiplo de la dimensión de la malla (%d).\n", n, q);
+        if (rango == 0) fprintf(stderr, "Error: N (%d) debe ser multiplo de la dimension de la malla (%d).\n", n, q);
         MPI_Finalize();
         return 1;
     }
@@ -110,7 +111,7 @@ int main(int argc, char *argv[]) {
 
     int coords[2];
     MPI_Cart_coords(comm_2d, rango, 2, coords);
-    int mi_fila = coords;
+    int mi_fila = coords[0];
     int mi_col = coords[1];
 
     MPI_Comm comm_fila, comm_col;
@@ -129,7 +130,7 @@ int main(int argc, char *argv[]) {
     double t_seq = 0.0;
 
     if (rango == 0) {
-        printf("=== PRÁCTICA 4: SUMMA CON BLOQUES Y EMPAQUETAMIENTO ===\n");
+        printf("=== PRACTICA 4: SUMMA CON BLOQUES Y EMPAQUETAMIENTO ===\n");
         printf("Matriz N = %d | Malla 2D = %dx%d (%d procesos) | Bloque local b = %d\n", n, q, q, tamano, b);
 
         A = (double *)malloc((size_t)n * n * sizeof(double));
@@ -158,7 +159,7 @@ int main(int argc, char *argv[]) {
         for (int r = 0; r < tamano; r++) {
             int c[2];
             MPI_Cart_coords(comm_2d, r, 2, c);
-            int pos_offset = (c * b) + (c[1] * b) * n;
+            int pos_offset = (c[0] * b) + (c[1] * b) * n;
 
             if (r == 0) {
                 for (int col = 0; col < b; col++) {
@@ -202,7 +203,7 @@ int main(int argc, char *argv[]) {
         for (int r = 0; r < tamano; r++) {
             int c[2];
             MPI_Cart_coords(comm_2d, r, 2, c);
-            int pos_offset = (c * b) + (c[1] * b) * n;
+            int pos_offset = (c[0] * b) + (c[1] * b) * n;
 
             if (r == 0) {
                 for (int col = 0; col < b; col++) {
@@ -232,7 +233,7 @@ int main(int argc, char *argv[]) {
             }
             error = sqrt(error);
             printf(" - Speedup (S): %.4f\n", t_seq / t_par);
-            printf(" - Error (norma euclídea): %.3e\n", error);
+            printf(" - Error (norma euclidea): %.3e\n", error);
             free(Cseq);
         }
         free(A); free(B); free(C);
