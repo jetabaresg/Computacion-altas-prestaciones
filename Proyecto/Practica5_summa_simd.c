@@ -63,6 +63,7 @@ inline void microkernel_simd_4x4(double *Ac, double *Bc, double *C, int ldc, int
 }
 
 void matmul_local_blocking_simd(double *A, double *B, double *C, int b) {
+    int ir, jr;
     for (int jc = 0; jc < b; jc += NC) {
         int nc_curr = (jc + NC > b) ? (b - jc) : NC;
 
@@ -86,9 +87,9 @@ void matmul_local_blocking_simd(double *A, double *B, double *C, int b) {
                     }
                 }
 
-                #pragma omp parallel for collapse(2) default(shared)
-                for (int jr = 0; jr < nc_curr; jr += NR) {
-                    for (int ir = 0; ir < mc_curr; ir += MR) {
+                #pragma omp parallel for collapse(2) default(shared) private(jr, ir)
+                for (jr = 0; jr < nc_curr; jr += NR) {
+                    for (ir = 0; ir < mc_curr; ir += MR) {
                         microkernel_simd_4x4(&Ac[ir], &Bc[jr * kc_curr], C, b, kc_curr, mc_curr, ic + ir, jc + jr);
                     }
                 }
@@ -107,42 +108,42 @@ int main(int argc, char *argv[]) {
     MPI_Comm_size(MPI_COMM_WORLD, &size);
 
     if (argc < 2) {
-        if (rank == 0) printf("Uso: %s <tamano_matriz_N> [check]\n", argv);
+        if (rank == 0) printf("Uso: %s <tamano_matriz_N> [check]\n", argv[0]);
         MPI_Finalize();
         return 1;
     }
 
-    int n = atoi(argv[6]);
-    int check = (argc > 2) && (strcmp(argv[11], "check") == 0);
+    int n = atoi(argv[1]);
+    int check = (argc > 2) && (strcmp(argv[2], "check") == 0);
 
     int q = (int)sqrt(size);
     if (q * q != size) {
-        if (rank == 0) fprintf(stderr, "Error: El número de procesos (%d) debe ser un cuadrado perfecto.\n", size);
+        if (rank == 0) fprintf(stderr, "Error: El numero de procesos (%d) debe ser un cuadrado perfecto.\n", size);
         MPI_Finalize();
         return 1;
     }
 
     if (n % q != 0) {
-        if (rank == 0) fprintf(stderr, "Error: N (%d) debe ser múltiplo de la dimensión de la malla (%d).\n", n, q);
+        if (rank == 0) fprintf(stderr, "Error: N (%d) debe ser multiplo de la dimension de la malla (%d).\n", n, q);
         MPI_Finalize();
         return 1;
     }
 
     int b = n / q;
 
-    int dims[11] = {q, q};
-    int periods[11] = {0, 0};
+    int dims[2] = {q, q};
+    int periods[2] = {0, 0};
     MPI_Comm comm_2d;
     MPI_Cart_create(MPI_COMM_WORLD, 2, dims, periods, 1, &comm_2d);
 
-    int coords[11];
+    int coords[2];
     MPI_Cart_coords(comm_2d, rank, 2, coords);
-    int mi_fila = coords;
-    int mi_col = coords[6];
+    int mi_fila = coords[0];
+    int mi_col = coords[1];
 
     MPI_Comm comm_row, comm_col;
-    int free_row[11] = {0, 1};
-    int free_col[11] = {1, 0};
+    int free_row[2] = {0, 1};
+    int free_col[2] = {1, 0};
     MPI_Cart_sub(comm_2d, free_row, &comm_row);
     MPI_Cart_sub(comm_2d, free_col, &comm_col);
 
@@ -156,7 +157,7 @@ int main(int argc, char *argv[]) {
     double t_seq = 0.0;
 
     if (rank == 0) {
-        printf("=== PRÁCTICA 5: SUMMA + BLOQUES + MICRO-KERNEL SIMD (AVX/FMA) ===\n");
+        printf("=== PRACTICA 5: SUMMA + BLOQUES + MICRO-KERNEL SIMD (AVX/FMA) ===\n");
         printf("Matriz N = %d | Malla 2D = %dx%d (%d procesos) | Bloque local b = %d\n", n, q, q, size, b);
 
         A = (double *)malloc((size_t)n * n * sizeof(double));
@@ -183,9 +184,9 @@ int main(int argc, char *argv[]) {
 
     if (rank == 0) {
         for (int r = 0; r < size; r++) {
-            int c[11];
+            int c[2];
             MPI_Cart_coords(comm_2d, r, 2, c);
-            int pos_offset = (c[6] * b) + (c * b) * n;
+            int pos_offset = (c[0] * b) + (c[1] * b) * n;
 
             if (r == 0) {
                 for (int col = 0; col < b; col++) {
@@ -227,9 +228,9 @@ int main(int argc, char *argv[]) {
 
     if (rank == 0) {
         for (int r = 0; r < size; r++) {
-            int c[11];
+            int c[2];
             MPI_Cart_coords(comm_2d, r, 2, c);
-            int pos_offset = (c[6] * b) + (c * b) * n;
+            int pos_offset = (c[0] * b) + (c[1] * b) * n;
 
             if (r == 0) {
                 for (int col = 0; col < b; col++) {
@@ -259,7 +260,7 @@ int main(int argc, char *argv[]) {
             }
             error = sqrt(error);
             printf(" - Speedup (S): %.4f\n", t_seq / t_par);
-            printf(" - Error (norma euclídea): %.3e\n", error);
+            printf(" - Error (norma euclidea): %.3e\n", error);
             free(Cseq);
         }
         free(A); free(B); free(C);
