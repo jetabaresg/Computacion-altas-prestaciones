@@ -10,7 +10,7 @@
 mkdir -p ~/ejer_p1 
 cd ~/ejer_p1 
 # 2. Compilación del código MPI 
-mpicc -O3 -Wall -o practica1_matmul_mpi $HOME/W/cna/Computacion-altas-prestaciones/Proyecto/Practica1_matmul_mpi.c -lm 
+# mpicc -O3 -Wall -o practica1_matmul_mpi $HOME/W/cna/Computacion-altas-prestaciones/Proyecto/Practica1_matmul_mpi.c -lm 
 # 3. Pruebas de ejecución 
 echo "pruebas practica 1"
 mpiexec -n 2 ./practica1_matmul_mpi 1024 check 

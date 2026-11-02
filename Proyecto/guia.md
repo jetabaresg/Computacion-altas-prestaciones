@@ -1,5 +1,8 @@
 Crear archivos de compilacion:
+```
+ssh -l jtabgal@alumno.upv.es kahan.dsic.upv.es
 
+```
 mkdir -p ~/ejer_p1 cd ~/ejer_p
 
 \# 2\. Compilar el codigo C:
